@@ -1,13 +1,14 @@
 package hms.service;
 
-import hms.entity.Patient;
+import hms.dto.PatientRequestDto;
+import hms.dto.PatientResponseDto;
 
 import java.util.List;
 
 public interface PatientService {
-    Patient createPatient(Patient patient);
-    Patient updatePatient(Patient patient);
+    PatientResponseDto createPatient(PatientRequestDto requestDto);
+    PatientResponseDto updatePatient(Long id, PatientRequestDto requestDto);
     void deletePatient(Long id);
-    Patient getPatientById(Long id);
-    List<Patient> getAllPatients();
+    PatientResponseDto getPatientById(Long id);
+    List<PatientResponseDto> getAllPatients();
 }

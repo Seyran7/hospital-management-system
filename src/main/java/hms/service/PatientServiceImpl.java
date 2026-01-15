@@ -1,12 +1,16 @@
 package hms.service;
 
+import hms.dto.PatientRequestDto;
+import hms.dto.PatientResponseDto;
 import hms.entity.Patient;
 import hms.exception.PatientNotFoundException;
+import hms.mapper.PatientMapper;
 import hms.repository.PatientRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PatientServiceImpl implements PatientService {
@@ -18,30 +22,42 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public Patient createPatient(Patient patient) {
-        return patientRepository.save(patient);
+    public PatientResponseDto createPatient(PatientRequestDto requestDto) {
+      Patient patient = PatientMapper.toEntity(requestDto);
+      Patient saved = patientRepository.save(patient);
+      return PatientMapper.toResponse(saved);
+
     }
     @Override
-    public Patient updatePatient(Patient patient) {
-        Patient existingPatient = patientRepository.findById(patient.getId()).orElseThrow(()-> new PatientNotFoundException(patient.getId()));
-        existingPatient.setFirstName(patient.getFirstName());
-        existingPatient.setLastName(patient.getLastName());
-        existingPatient.setEmail(patient.getEmail());
+    public PatientResponseDto updatePatient(Long id,PatientRequestDto requestDto) {
+        Patient existingPatient = patientRepository.findById(id).orElseThrow(()-> new PatientNotFoundException(id));
+        existingPatient.setFirstName(requestDto.getFirstName());
+        existingPatient.setLastName(requestDto.getLastName());
+        existingPatient.setEmail(requestDto.getEmail());
 
-        return patientRepository.save(patient);
+        Patient updatedPatient = patientRepository.save(existingPatient);
+
+        return PatientMapper.toResponse(updatedPatient);
     }
     @Override
     public void deletePatient(Long id) {
+        if(patientRepository.existsById(id)) {
+            throw new PatientNotFoundException(id);
+        }
 
     }
     @Override
-    public Patient getPatientById(Long id) {
-        return patientRepository.findById(id).orElseThrow(()->new RuntimeException("Patient not found with id:"+id));
+    public PatientResponseDto getPatientById(Long id) {
+        Patient patient = patientRepository.findById(id).orElseThrow(()-> new PatientNotFoundException(id));
+        return PatientMapper.toResponse(patient);
     }
 
     @Override
-    public List<Patient> getAllPatients() {
-        return patientRepository.findAll();
+    public List<PatientResponseDto> getAllPatients() {
+        return patientRepository.findAll()
+                .stream()
+                .map(PatientMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
 }

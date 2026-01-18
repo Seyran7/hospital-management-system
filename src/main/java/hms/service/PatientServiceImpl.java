@@ -6,7 +6,6 @@ import hms.entity.Patient;
 import hms.exception.PatientNotFoundException;
 import hms.mapper.PatientMapper;
 import hms.repository.PatientRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

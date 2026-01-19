@@ -1,13 +1,12 @@
-package com.seyran.hospitalmanagementsystem;
+package hms;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class HospitalManagementSystemApplicationTests {
-
+public class HospitalManagementSystemApplicationTests {
     @Test
     void contextLoads() {
-    }
 
+    }
 }

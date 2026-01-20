@@ -61,16 +61,32 @@ public class PatientServiceImplTest {
         p1.setLastName("Duran");
         p1.setPhoneNumber("055111222333");
 
-        Patient p2 = new Patient();
-        p2.setId(2L);
-        p2.setFirstName("Jack");
-        p2.setLastName("Doe");
-        p2.setPhoneNumber("055444555666");
+
 
         when(patientRepository.findById(1L)).thenReturn(Optional.of(p1));
 
-        List<PatientResponseDto> responseList= patientServiceImpl.getAllPatients();
+        PatientResponseDto patientResponse = patientServiceImpl.getPatientById(1L);
 
+        assertNotNull(patientResponse);
+        assertEquals("John ",patientResponse.getFirstname());
+        verify(patientRepository,times(1)).findById(1L);
+    }
+    @Test
+    void getAllPatients_shouldReturnAllPatients() {
+        Patient p1 = new Patient();
+        p1.setId(1L);
+        p1.setFirstName("John");
+        p1.setLastName("Duran");
+        p1.setPhoneNumber("055111222333");
+
+        Patient p2 = new Patient();
+        p2.setId(1L);
+        p2.setFirstName("Joe");
+        p2.setLastName("Michel");
+        p2.setPhoneNumber("055444555666");
+
+        when(patientRepository.findAll()).thenReturn(List.of(p1,p2));
+        List<PatientResponseDto> responseList = patientServiceImpl.getAllPatients();
         assertEquals(2,responseList.size());
         verify(patientRepository,times(1)).findAll();
     }

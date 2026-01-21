@@ -5,6 +5,7 @@ import hms.dto.PatientResponseDto;
 import hms.exception.ErrorResponse;
 import hms.service.PatientService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -48,12 +49,14 @@ public class PatientController {
         return ResponseEntity.ok(patientService.getAllPatients());
     }
     @GetMapping("/{id}")
-    @Operation(summary = "Get patient by id")
+    @Operation(summary = "Get patient by id",
+            description = "Returns patient details if found, otherwise 404 error")
+
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description ="Patient found",content = @Content(schema=@Schema(implementation=PatientResponseDto.class))),
             @ApiResponse(responseCode = "404",description ="Patient not found",content = @Content(schema=@Schema(implementation= ErrorResponse.class))),
     })
-    public  ResponseEntity<PatientResponseDto> getPatientById(@PathVariable Long id) {
+    public  ResponseEntity<PatientResponseDto> getPatientById(@Parameter(description = "Patient ID",example = "1",required = true) @PathVariable Long id) {
         return ResponseEntity.ok(patientService.getPatientById(id));
     }
     @PutMapping("/{id}")

@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +49,14 @@ public class PatientController {
     public ResponseEntity<List<PatientResponseDto>> getAllPatients() {
         return ResponseEntity.ok(patientService.getAllPatients());
     }
+    @GetMapping("/search")
+    public ResponseEntity<Page<PatientResponseDto>> searchPatients(
+            @RequestParam(required = false) String firstName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return ResponseEntity.ok(patientService.searchPatients(firstName, page, size));
+    }
     @GetMapping("/{id}")
     @Operation(summary = "Get patient by id",
             description = "Returns patient details if found, otherwise 404 error")
@@ -59,6 +68,7 @@ public class PatientController {
     public  ResponseEntity<PatientResponseDto> getPatientById(@Parameter(description = "Patient ID",example = "1",required = true) @PathVariable Long id) {
         return ResponseEntity.ok(patientService.getPatientById(id));
     }
+
     @PutMapping("/{id}")
     @Operation(summary="Update patient by ID")
     @ApiResponses(value = {

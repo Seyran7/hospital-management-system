@@ -6,6 +6,9 @@ import hms.entity.Patient;
 import hms.exception.PatientNotFoundException;
 import hms.mapper.PatientMapper;
 import hms.repository.PatientRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,6 +60,19 @@ public class PatientServiceImpl implements PatientService {
                 .stream()
                 .map(PatientMapper::toResponse)
                 .collect(Collectors.toList());
+    }
+    @Override
+    public Page<PatientResponseDto> searchPatients(String firstName, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page <Patient> patients;
+
+        if (firstName == null||firstName.isBlank()) {
+            patients = patientRepository.findAll(pageable);
+        }else{
+            patients = patientRepository.findByFirstNameContainingIgnoreCase(firstName, pageable);
+        }
+        return patients.map(PatientMapper::toResponse);
     }
 
 }

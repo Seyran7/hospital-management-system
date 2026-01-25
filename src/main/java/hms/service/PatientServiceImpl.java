@@ -62,8 +62,7 @@ public class PatientServiceImpl implements PatientService {
                 .collect(Collectors.toList());
     }
     @Override
-    public Page<PatientResponseDto> searchPatients(String firstName, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<PatientResponseDto> searchPatients(String firstName, Pageable pageable) {
 
         Page <Patient> patients;
 

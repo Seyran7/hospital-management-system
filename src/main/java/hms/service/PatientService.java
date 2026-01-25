@@ -3,6 +3,7 @@ package hms.service;
 import hms.dto.PatientRequestDto;
 import hms.dto.PatientResponseDto;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -12,5 +13,5 @@ public interface PatientService {
     void deletePatient(Long id);
     PatientResponseDto getPatientById(Long id);
     List<PatientResponseDto> getAllPatients();
-    Page<PatientResponseDto> searchPatients(String firstName, int page, int size);
+    Page<PatientResponseDto> searchPatients(String firstName, Pageable pageable);
 }

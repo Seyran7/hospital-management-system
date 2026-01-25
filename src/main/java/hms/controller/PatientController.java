@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,12 +52,33 @@ public class PatientController {
         return ResponseEntity.ok(patientService.getAllPatients());
     }
     @GetMapping("/search")
+    @Operation(
+            summary="Search  patients",
+            description="Search patients by first name with pagination"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description="Patients found",
+                    content=@Content(mediaType = "application/json")
+            )
+
+    })
     public ResponseEntity<Page<PatientResponseDto>> searchPatients(
-            @RequestParam(required = false) String firstName,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(required = false)
+            @Parameter(description = "Patient first name")
+            String firstName,
+
+            @RequestParam(defaultValue = "0")
+            @Parameter(description = "Page number (starts from 0)")
+            int page,
+
+            @RequestParam(defaultValue = "10")
+            @Parameter(description = "Page size")
+            int size
     ){
-        return ResponseEntity.ok(patientService.searchPatients(firstName, page, size));
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(patientService.searchPatients(firstName, pageable));
     }
     @GetMapping("/{id}")
     @Operation(summary = "Get patient by id",

@@ -66,8 +66,8 @@ public class PatientController {
     })
     public ResponseEntity<Page<PatientResponseDto>> searchPatients(
             @RequestParam(required = false)
-            @Parameter(description = "Patient first name")
-            String firstName,
+            @Parameter(description = "Global search (first name, last name, email, phone)")
+            String g,
 
             @RequestParam(defaultValue = "0")
             @Parameter(description = "Page number (starts from 0)")
@@ -78,7 +78,7 @@ public class PatientController {
             int size
     ){
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(patientService.searchPatients(firstName, pageable));
+        return ResponseEntity.ok(patientService.searchPatients(g, pageable));
     }
     @GetMapping("/{id}")
     @Operation(summary = "Get patient by id",

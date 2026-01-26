@@ -13,5 +13,5 @@ public interface PatientService {
     void deletePatient(Long id);
     PatientResponseDto getPatientById(Long id);
     List<PatientResponseDto> getAllPatients();
-    Page<PatientResponseDto> searchPatients(String firstName, Pageable pageable);
+    Page<PatientResponseDto> searchPatients(String g, Pageable pageable);
 }

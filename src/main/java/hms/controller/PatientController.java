@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,8 +55,9 @@ public class PatientController {
     @GetMapping("/search")
     @Operation(
             summary="Search  patients",
-            description="Search patients by first name with pagination"
-    )
+            description="Global search by first name, last name, email or phone with pagination"
+
+            )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
@@ -70,15 +72,18 @@ public class PatientController {
             String g,
 
             @RequestParam(defaultValue = "0")
-            @Parameter(description = "Page number (starts from 0)")
-            int page,
+            @Parameter(description = "Page number (starts from 0)")int page,
 
             @RequestParam(defaultValue = "10")
-            @Parameter(description = "Page size")
-            int size
+            @Parameter(description = "Page size")int size,
+
+            @RequestParam(defaultValue = "id,asc")
+            @Parameter(description = "Sorting format:field,asc/desc")
+            String[] sort
     ){
+        Sort.Direction direction = sort[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(patientService.searchPatients(g, pageable));
+        return ResponseEntity.ok(patientService.searchPatients(g,pageable));
     }
     @GetMapping("/{id}")
     @Operation(summary = "Get patient by id",

@@ -66,7 +66,11 @@ public class PatientServiceImpl implements PatientService {
     public Page<PatientResponseDto> searchPatients(String g, Pageable pageable) {
 
         Specification<Patient> specification =
-                Specification.where(PatientSpecification.globalSearch(g));
+                Specification.where(null);
+        if(g != null&&!g.isBlank()) {
+            specification=specification.and(PatientSpecification.globalSearch(g));
+        }
+
 
         return patientRepository.findAll(specification,pageable).map(PatientMapper::toResponse);
     }

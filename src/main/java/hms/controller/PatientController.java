@@ -1,6 +1,7 @@
 package hms.controller;
 
 import hms.dto.PatientRequestDto;
+import hms.dto.PatientRequestSearchDto;
 import hms.dto.PatientResponseDto;
 import hms.exception.ErrorResponse;
 import hms.service.PatientService;
@@ -71,6 +72,11 @@ public class PatientController {
             @Parameter(description = "Global search (first name, last name, email, phone)")
             String g,
 
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phone,
+
             @RequestParam(defaultValue = "0")
             @Parameter(description = "Page number (starts from 0)")int page,
 
@@ -81,10 +87,19 @@ public class PatientController {
             @Parameter(description = "Sorting format:field,asc/desc")
             String[] sort
     ){
-        Sort.Direction direction = sort[1].equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(patientService.searchPatients(g,pageable));
+        Sort sorting = Sort.by(sort.length>1&&sort[1].equalsIgnoreCase("asc")?Sort.Direction.ASC:Sort.Direction.DESC);
+        Pageable pageable = PageRequest.of(page, size,sorting);
+        return ResponseEntity.ok(patientService.searchPatients(g,firstName,lastName,email,phone,pageable));
     }
+    @PostMapping("/search/advanced")
+    @Operation(summary = "Advanced patient search")
+    public ResponseEntity<Page<PatientResponseDto>> advancedSearch(
+        @RequestBody PatientRequestSearchDto request) {
+        Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
+        return ResponseEntity.ok(patientService.advancedSearch(request, pageable));
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get patient by id",
             description = "Returns patient details if found, otherwise 404 error")

@@ -1,6 +1,7 @@
 package hms.service;
 
 import hms.dto.PatientRequestDto;
+import hms.dto.PatientRequestSearchDto;
 import hms.dto.PatientResponseDto;
 import hms.entity.Patient;
 import hms.exception.PatientNotFoundException;
@@ -63,15 +64,34 @@ public class PatientServiceImpl implements PatientService {
                 .collect(Collectors.toList());
     }
     @Override
-    public Page<PatientResponseDto> searchPatients(String g, Pageable pageable) {
+    public Page<PatientResponseDto> searchPatients(String g,String firstName,
+                                                   String lastName,
+                                                   String email,
+                                                   String phone,
+                                                   Pageable pageable) {
 
-        Specification<Patient> specification =
+        Specification<Patient> specification;
                 Specification.where(null);
         if(g != null&&!g.isBlank()) {
-            specification=specification.and(PatientSpecification.globalSearch(g));
+            specification=PatientSpecification.globalSearch(g);
+        }else{
+            specification=Specification
+            .where(PatientSpecification.firstNameContains(firstName))
+            .and(PatientSpecification.lastNameContains(lastName))
+            .and(PatientSpecification.emailContains(email))
+            .and(PatientSpecification.phoneContains(phone));
         }
 
 
+        return patientRepository.findAll(specification,pageable).map(PatientMapper::toResponse);
+    }
+    @Override
+    public Page<PatientResponseDto>advancedSearch(PatientRequestSearchDto request,Pageable pageable){
+        Specification<Patient>specification=Specification
+                .where(PatientSpecification.firstNameContains(request.getFirstName())
+                .and(PatientSpecification.lastNameContains(request.getLastName()))
+                .and(PatientSpecification.emailContains(request.getEmail()))
+                .and(PatientSpecification.phoneContains(request.getPhone())));
         return patientRepository.findAll(specification,pageable).map(PatientMapper::toResponse);
     }
 
